@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.course {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.course i {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.basket {
+    margin-top: 30px;
+    padding: 15px;
+    border: 2px dashed #aaa;
+    border-radius: 5px;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
