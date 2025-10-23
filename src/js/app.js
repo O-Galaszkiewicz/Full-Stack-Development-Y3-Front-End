@@ -31,7 +31,8 @@ new Vue({
         icon: 'fas fa-laptop-code'
       }
     ],
-    basket: []
+    basket: [],
+    showBasket: false
   },
   methods: {
     addToBasket(course) {
@@ -42,6 +43,17 @@ new Vue({
     },
     isInBasket(course) {
       return this.basket.includes(course);
+    },
+    toggleBasket() {
+      this.showBasket = !this.showBasket;
+    },
+    removeFromBasket(index) {
+      const removed = this.basket.splice(index, 1)[0];
+      removed.spaces++;
+    },
+    checkout() {
+      alert('Proceeding to checkout... (to be implemented)');
+      this.showBasket = false;
     }
   },
   computed: {

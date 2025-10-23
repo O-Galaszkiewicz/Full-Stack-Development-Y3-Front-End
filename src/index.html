@@ -2,39 +2,63 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Courses</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>Courses</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div id="app">
-        <h1>Available Courses</h1>
-        <div class="course" v-for="(course, index) in courses" :key="index">
-            <i :class="course.icon"></i>
-            <strong>{{ course.subject }}</strong><br>
-            Location: {{ course.location }}<br>
-            Price: ${{ course.price }}<br>
-            Spaces left: {{ course.spaces }}<br>
-            <button @click="addToBasket(course)" :disabled="isInBasket(course) || course.spaces === 0">
-                {{ isInBasket(course) ? 'In Basket' : 'Add to Basket' }}
-            </button>
-        </div>
+  <div id="app">
+    <header class="header">
+      <h1>Available Courses</h1>
 
-        <div class="basket" v-if="basket.length > 0">
-            <h1>Basket</h1>
-            <ul>
-                <li v-for="(item, idx) in basket" :key="idx">
-                    {{ item.subject }} - ${{ item.price }}
-                </li>
-            </ul>
-            <strong>Total: ${{ basketTotal }}</strong>
-        </div>
+      <!-- Basket Icon Button -->
+      <button class="basket-btn" @click="toggleBasket">
+        <i class="fas fa-shopping-basket"></i>
+        <span class="badge" v-if="basket.length">{{ basket.length }}</span>
+      </button>
+    </header>
+
+    <!-- Course List -->
+    <div class="course" v-for="(course, index) in courses" :key="index">
+      <i :class="course.icon"></i>
+      <strong>{{ course.subject }}</strong><br>
+      Location: {{ course.location }}<br>
+      Price: ${{ course.price }}<br>
+      Spaces left: {{ course.spaces }}<br>
+      <button @click="addToBasket(course)" :disabled="isInBasket(course) || course.spaces === 0">
+        {{ isInBasket(course) ? 'In Basket' : 'Add to Basket' }}
+      </button>
     </div>
 
-    <script src="js/app.js"></script>
+    <!-- Basket Modal -->
+    <div class="modal" v-if="showBasket">
+      <div class="modal-content">
+        <span class="close-btn" @click="toggleBasket">&times;</span>
+        <h2>Your Basket</h2>
+
+        <div v-if="basket.length === 0">
+          <p>Your basket is empty.</p>
+        </div>
+
+        <ul v-else>
+          <li v-for="(item, idx) in basket" :key="idx">
+            {{ item.subject }} - ${{ item.price }}
+            <button class="remove-btn" @click="removeFromBasket(idx)">Remove</button>
+          </li>
+        </ul>
+
+        <div v-if="basket.length > 0">
+          <strong>Total: ${{ basketTotal }}</strong><br><br>
+          <button class="checkout-btn" @click="checkout">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
 </body>
 
 </html>
