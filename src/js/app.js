@@ -35,7 +35,9 @@ new Vue({
     basket: [],
     showBasket: false,
     customerName: '',
-    customerPhone: ''
+    customerPhone: '',
+    searchQuery: '',
+    sortOption: ''
   },
   methods: {
     addToBasket(course) {
@@ -80,11 +82,49 @@ new Vue({
       this.customerPhone = '';
       this.basket = [];
       this.currentView = 'courses';
+    },
+    sortCourses() {
+      this.courses = [...this.courses];
     }
   },
   computed: {
     basketTotal() {
       return this.basket.reduce((total, course) => total + course.price, 0);
+    },
+    filteredCourses() {
+      let result = this.courses;
+
+      if (this.searchQuery.trim() !== '') {
+        const query = this.searchQuery.toLowerCase();
+        result = result.filter(course =>
+          course.subject.toLowerCase().includes(query) ||
+          course.location.toLowerCase().includes(query) ||
+          String(course.price).includes(query)
+        );
+      }
+
+      switch (this.sortOption) {
+        case 'price-asc':
+          result = result.slice().sort((a, b) => a.price - b.price);
+          break;
+        case 'price-desc':
+          result = result.slice().sort((a, b) => b.price - a.price);
+          break;
+        case 'subject-asc':
+          result = result.slice().sort((a, b) => a.subject.localeCompare(b.subject));
+          break;
+        case 'subject-desc':
+          result = result.slice().sort((a, b) => b.subject.localeCompare(a.subject));
+          break;
+        case 'spaces-asc':
+          result = result.slice().sort((a, b) => a.spaces - b.spaces);
+          break;
+        case 'spaces-desc':
+          result = result.slice().sort((a, b) => b.spaces - a.spaces);
+          break;
+      }
+
+      return result;
     }
   }
 });

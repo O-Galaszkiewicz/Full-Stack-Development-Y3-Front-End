@@ -2,86 +2,103 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Courses</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <div id="app">
-    <!-- Header -->
-    <header class="header">
-      <h1 v-if="currentView === 'courses'">Available Courses</h1>
-      <h1 v-else>Checkout</h1>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1 v-if="currentView === 'courses'">Available Courses</h1>
+            <h1 v-else>Checkout</h1>
 
-      <!-- Basket Icon Button -->
-      <button class="basket-btn" v-if="currentView === 'courses'" @click="toggleBasket">
-        <i class="fas fa-shopping-basket"></i>
-        <span class="badge" v-if="basket.length">{{ basket.length }}</span>
-      </button>
-    </header>
+            <!-- Basket Icon Button -->
+            <button class="basket-btn" v-if="currentView === 'courses'" @click="toggleBasket">
+                <i class="fas fa-shopping-basket"></i>
+                <span class="badge" v-if="basket.length">{{ basket.length }}</span>
+            </button>
+        </header>
 
-    <!-- Course View -->
-    <div v-if="currentView === 'courses'">
-      <div class="course" v-for="(course, index) in courses" :key="index">
-        <i :class="course.icon"></i>
-        <strong>{{ course.subject }}</strong><br>
-        Location: {{ course.location }}<br>
-        Price: ${{ course.price }}<br>
-        Spaces left: {{ course.spaces }}<br>
-        <button @click="addToBasket(course)" :disabled="isInBasket(course) || course.spaces === 0">
-          {{ isInBasket(course) ? 'In Basket' : 'Add to Basket' }}
-        </button>
-      </div>
+        <!-- Course View -->
+        <div v-if="currentView === 'courses'">
 
-      <!-- Basket Modal -->
-      <div class="modal" v-if="showBasket">
-        <div class="modal-content">
-          <span class="close-btn" @click="toggleBasket">&times;</span>
-          <h2>Your Basket</h2>
+            <!-- Search & Sort Controls -->
+            <div class="filter-bar">
+                <input type="text" v-model="searchQuery" placeholder="Search courses..." class="search-input">
 
-          <div v-if="basket.length === 0">
-            <p>Your basket is empty.</p>
-          </div>
+                <select v-model="sortOption" @change="sortCourses" class="sort-select">
+                    <option disabled value="">Sort by...</option>
+                    <option value="price-asc">Price (Lowest → Highest)</option>
+                    <option value="price-desc">Price (Highest → Lowest)</option>
+                    <option value="subject-asc">Subject (A → Z)</option>
+                    <option value="subject-desc">Subject (Z → A)</option>
+                    <option value="spaces-asc">Spaces (Lowest → Highest)</option>
+                    <option value="spaces-desc">Spaces (Highest → Lowest)</option>
+                </select>
+            </div>
 
-          <ul v-else>
-            <li v-for="(item, idx) in basket" :key="idx">
-              {{ item.subject }} - ${{ item.price }}
-              <button class="remove-btn" @click="removeFromBasket(idx)">Remove</button>
-            </li>
-          </ul>
+            <!-- Course List -->
+            <div class="course" v-for="(course, index) in filteredCourses" :key="index">
+                <i :class="course.icon"></i>
+                <strong>{{ course.subject }}</strong><br>
+                Location: {{ course.location }}<br>
+                Price: ${{ course.price }}<br>
+                Spaces left: {{ course.spaces }}<br>
+                <button @click="addToBasket(course)" :disabled="isInBasket(course) || course.spaces === 0">
+                    {{ isInBasket(course) ? 'In Basket' : 'Add to Basket' }}
+                </button>
+            </div>
 
-          <div v-if="basket.length > 0">
-            <strong>Total: ${{ basketTotal }}</strong><br><br>
-            <button class="checkout-btn" @click="checkout">Checkout</button>
-          </div>
+            <!-- Basket Modal -->
+            <div class="modal" v-if="showBasket">
+                <div class="modal-content">
+                    <span class="close-btn" @click="toggleBasket">&times;</span>
+                    <h2>Your Basket</h2>
+
+                    <div v-if="basket.length === 0">
+                        <p>Your basket is empty.</p>
+                    </div>
+
+                    <ul v-else>
+                        <li v-for="(item, idx) in basket" :key="idx">
+                            {{ item.subject }} - ${{ item.price }}
+                            <button class="remove-btn" @click="removeFromBasket(idx)">Remove</button>
+                        </li>
+                    </ul>
+
+                    <div v-if="basket.length > 0">
+                        <strong>Total: ${{ basketTotal }}</strong><br><br>
+                        <button class="checkout-btn" @click="checkout">Checkout</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- Checkout View -->
+        <div v-else>
+            <h2>Please enter your details</h2>
+            <form @submit.prevent="submitOrder">
+                <label>
+                    Name:<br>
+                    <input type="text" v-model="customerName" required placeholder="John Doe">
+                </label>
+                <br><br>
+                <label>
+                    Phone:<br>
+                    <input type="text" v-model="customerPhone" required placeholder="0123456789">
+                </label>
+                <br><br>
+                <button type="submit" class="checkout-btn">Submit Order</button>
+                <button type="button" class="remove-btn" @click="cancelCheckout">Cancel</button>
+            </form>
+        </div>
     </div>
 
-    <!-- Checkout View -->
-    <div v-else>
-      <h2>Please enter your details</h2>
-      <form @submit.prevent="submitOrder">
-        <label>
-          Name:<br>
-          <input type="text" v-model="customerName" required placeholder="John Doe">
-        </label>
-        <br><br>
-        <label>
-          Phone:<br>
-          <input type="text" v-model="customerPhone" required placeholder="0123456789">
-        </label>
-        <br><br>
-        <button type="submit" class="checkout-btn">Submit Order</button>
-        <button type="button" class="remove-btn" @click="cancelCheckout">Cancel</button>
-      </form>
-    </div>
-  </div>
-
-  <script src="js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>
