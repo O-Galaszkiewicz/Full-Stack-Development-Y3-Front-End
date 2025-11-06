@@ -151,8 +151,7 @@ new Vue({
         icon: 'fas fa-briefcase'
       }
     ],
-
-    basket: [],         // Holds the list of courses the user has added to their shopping basket in an array
+    basket: [],         // Holds the list of courses the user has added to their shopping basket in an array. Each item: { course, quantity }
     showBasket: false,  // Controls whether the basket modal is visible
 
     // Temporary customer/order data used during checkout
@@ -165,30 +164,55 @@ new Vue({
   },
 
   methods: {
-    // addToBasket - Adds a selected course to the user's basket if:
-    // 1. The course isn't already there, and
-    // 2. There are available spaces.
-    // When added, one space is deducted from the course.
+    // Add to basket, or increase quantity if already added
     addToBasket(course) {
-      if (!this.isInBasket(course) && course.spaces > 0) {
-        this.basket.push(course);
+      const existingItem = this.basket.find(item => item.course === course);
+
+      if (existingItem) {
+        if (course.spaces > 0) {
+          existingItem.quantity++;
+          course.spaces--;
+        } else {
+          alert('No more spaces available for this course.');
+        }
+      } else if (course.spaces > 0) {
+        this.basket.push({ course: course, quantity: 1 });
         course.spaces--;
       }
     },
-    
+
+    // Decrease quantity or remove completely
+    decreaseQuantity(item) {
+      if (item.quantity > 1) {
+        item.quantity--;
+        item.course.spaces++;
+      } else {
+        this.removeFromBasket(this.basket.indexOf(item));
+      }
+    },
+
+    increaseQuantity(item) {
+      if (item.course.spaces > 0) {
+        item.quantity++;
+        item.course.spaces--;
+      } else {
+        alert('No more spaces available for this course.');
+      }
+    },
+
     isInBasket(course) {
-      return this.basket.includes(course);
+      return this.basket.some(item => item.course === course);
     },
 
     toggleBasket() {
       this.showBasket = !this.showBasket;
     },
 
-    // removeFromBasket - Removes a course from the basket based on its index,
-    // then restores one available space to that course.
+    // Remove entire course entry from basket
     removeFromBasket(index) {
-      const removed = this.basket.splice(index, 1)[0];
-      removed.spaces++;
+      const item = this.basket[index];
+      item.course.spaces += item.quantity;
+      this.basket.splice(index, 1);
     },
 
     checkout() {
@@ -196,16 +220,11 @@ new Vue({
       this.currentView = 'checkout';
     },
 
+    // Cancel checkout now simply returns to courses — basket untouched
     cancelCheckout() {
       this.currentView = 'courses';
     },
 
-    // submitOrder - Validates the user’s name and phone input:
-    // - Name must contain only letters and spaces.
-    // - Phone must contain only numbers.
-    // If valid, a confirmation alert is displayed.
-    // The basket is then cleared and the user is redirected to the main course list.
-    // Temporary validation solution, might add more user data for checkout page
     submitOrder() {
       const nameValid = /^[A-Za-z\s]+$/.test(this.customerName);
       const phoneValid = /^[0-9]+$/.test(this.customerPhone);
@@ -219,28 +238,32 @@ new Vue({
         return;
       }
 
-      alert(`Order placed successfully!\nName: ${this.customerName}\nPhone: ${this.customerPhone}\nTotal: $${this.basketTotal}`);
+      alert(
+        `Order placed successfully!\nName: ${this.customerName}\nPhone: ${this.customerPhone}\nTotal: $${this.basketTotal}`
+      );
 
-      // Reset form and basket after checkout
+      // Clear data after successful checkout
       this.customerName = '';
       this.customerPhone = '';
       this.basket = [];
       this.currentView = 'courses';
+    },
+
+    sortCourses() {
+      this.courses = [...this.courses]; // re-trigger reactivity
     }
   },
 
   computed: {
+    // Total cost based on quantity
     basketTotal() {
-      return this.basket.reduce((total, course) => total + course.price, 0);
+      return this.basket.reduce((total, item) => total + item.course.price * item.quantity, 0);
     },
 
-    // filteredCourses - Returns a filtered and sorted version of the course list.
-    // Filtering: Matches the user's search query against course subject, location, or price.
-    // Sorting: Adjusts order based on the user's selected sort option.
+    // Filter and sort courses
     filteredCourses() {
       let result = this.courses;
 
-      // Filter courses based on search query
       if (this.searchQuery.trim() !== '') {
         const query = this.searchQuery.toLowerCase();
         result = result.filter(course =>
@@ -250,7 +273,6 @@ new Vue({
         );
       }
 
-      // Sort the filtered list based on selected sort option
       switch (this.sortOption) {
         case 'price-asc':
           result = result.slice().sort((a, b) => a.price - b.price);

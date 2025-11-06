@@ -48,7 +48,7 @@
                 Location: {{ course.location }}<br>
                 Price: ${{ course.price }}<br>
                 Spaces left: {{ course.spaces }}<br>
-                <button @click="addToBasket(course)" :disabled="isInBasket(course) || course.spaces === 0">
+                <button @click="addToBasket(course)">
                     {{ isInBasket(course) ? 'In Basket' : 'Add to Basket' }}
                 </button>
             </div>
@@ -65,8 +65,12 @@
 
                     <ul v-else>
                         <li v-for="(item, idx) in basket" :key="idx">
-                            {{ item.subject }} - ${{ item.price }}
-                            <button class="remove-btn" @click="removeFromBasket(idx)">Remove</button>
+                            {{ item.course.subject }} - ${{ item.course.price }} × {{ item.quantity }}
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" @click="decreaseQuantity(item)">-</button>
+                                <button class="quantity-btn" @click="increaseQuantity(item)">+</button>
+                                <button class="remove-btn" @click="removeFromBasket(idx)">Remove</button>
+                            </div>
                         </li>
                     </ul>
 
