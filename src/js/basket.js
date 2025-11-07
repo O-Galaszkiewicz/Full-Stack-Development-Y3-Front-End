@@ -1,4 +1,4 @@
-app.addToBasket = function (course) {
+app.addToBasket = function(course) {
   const existingItem = this.basket.find(item => item.course === course);
   if (existingItem) {
     if (course.spaces > 0) {
@@ -22,7 +22,7 @@ app.decreaseQuantity = function (item) {
   }
 };
 
-app.increaseQuantity = function (item) {
+app.increaseQuantity = function(item) {
   if (item.course.spaces > 0) {
     item.quantity++;
     item.course.spaces--;
@@ -37,10 +37,6 @@ app.removeFromBasket = function (index) {
   this.basket.splice(index, 1);
 };
 
-app.toggleBasket = function () {
-  this.showBasket = !this.showBasket;
-};
-
-app.isInBasket = function (course) {
+app.isInBasket = function(course) {
   return this.basket.some(item => item.course === course);
 };

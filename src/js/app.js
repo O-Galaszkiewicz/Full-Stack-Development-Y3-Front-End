@@ -173,7 +173,18 @@ const app = new Vue({
     // Cancel checkout and go back
     cancelCheckout() {
       this.currentView = 'courses';
-    }
+    },
+
+    toggleBasket () {
+      this.showBasket = !this.showBasket;
+    },
+
+    // Placeholder basket methods (defined in basket.js)
+    addToBasket() { },
+    removeFromBasket() { },
+    increaseQuantity() { },
+    decreaseQuantity() { },
+    isInBasket() { }
   },
 
   computed: {
