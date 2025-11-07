@@ -1,4 +1,4 @@
-new Vue({
+const app = new Vue({
   el: '#app',
   data: {
     currentView: 'courses', // Determines which "page" is currently displayed: 'courses' or 'checkout'
@@ -164,10 +164,8 @@ new Vue({
   },
 
   methods: {
-    // Add to basket, or increase quantity if already added
     addToBasket(course) {
       const existingItem = this.basket.find(item => item.course === course);
-
       if (existingItem) {
         if (course.spaces > 0) {
           existingItem.quantity++;
@@ -181,7 +179,6 @@ new Vue({
       }
     },
 
-    // Decrease quantity or remove completely
     decreaseQuantity(item) {
       if (item.quantity > 1) {
         item.quantity--;
@@ -208,7 +205,6 @@ new Vue({
       this.showBasket = !this.showBasket;
     },
 
-    // Remove entire course entry from basket
     removeFromBasket(index) {
       const item = this.basket[index];
       item.course.spaces += item.quantity;
@@ -220,47 +216,16 @@ new Vue({
       this.currentView = 'checkout';
     },
 
-    // Cancel checkout now simply returns to courses — basket untouched
     cancelCheckout() {
       this.currentView = 'courses';
-    },
-
-    submitOrder() {
-      const nameValid = /^[A-Za-z\s]+$/.test(this.customerName);
-      const phoneValid = /^[0-9]+$/.test(this.customerPhone);
-
-      if (!nameValid) {
-        alert('Name must contain only letters.');
-        return;
-      }
-      if (!phoneValid) {
-        alert('Phone number must contain only numbers.');
-        return;
-      }
-
-      alert(
-        `Order placed successfully!\nName: ${this.customerName}\nPhone: ${this.customerPhone}\nTotal: $${this.basketTotal}`
-      );
-
-      // Clear data after successful checkout
-      this.customerName = '';
-      this.customerPhone = '';
-      this.basket = [];
-      this.currentView = 'courses';
-    },
-
-    sortCourses() {
-      this.courses = [...this.courses]; // re-trigger reactivity
     }
   },
 
   computed: {
-    // Total cost based on quantity
     basketTotal() {
       return this.basket.reduce((total, item) => total + item.course.price * item.quantity, 0);
     },
 
-    // Filter and sort courses
     filteredCourses() {
       let result = this.courses;
 
