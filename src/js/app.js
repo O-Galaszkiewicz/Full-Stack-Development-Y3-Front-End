@@ -164,58 +164,13 @@ const app = new Vue({
   },
 
   methods: {
-    addToBasket(course) {
-      const existingItem = this.basket.find(item => item.course === course);
-      if (existingItem) {
-        if (course.spaces > 0) {
-          existingItem.quantity++;
-          course.spaces--;
-        } else {
-          alert('No more spaces available for this course.');
-        }
-      } else if (course.spaces > 0) {
-        this.basket.push({ course: course, quantity: 1 });
-        course.spaces--;
-      }
-    },
-
-    decreaseQuantity(item) {
-      if (item.quantity > 1) {
-        item.quantity--;
-        item.course.spaces++;
-      } else {
-        this.removeFromBasket(this.basket.indexOf(item));
-      }
-    },
-
-    increaseQuantity(item) {
-      if (item.course.spaces > 0) {
-        item.quantity++;
-        item.course.spaces--;
-      } else {
-        alert('No more spaces available for this course.');
-      }
-    },
-
-    isInBasket(course) {
-      return this.basket.some(item => item.course === course);
-    },
-
-    toggleBasket() {
-      this.showBasket = !this.showBasket;
-    },
-
-    removeFromBasket(index) {
-      const item = this.basket[index];
-      item.course.spaces += item.quantity;
-      this.basket.splice(index, 1);
-    },
-
+    // Switch to checkout
     checkout() {
       this.showBasket = false;
       this.currentView = 'checkout';
     },
 
+    // Cancel checkout and go back
     cancelCheckout() {
       this.currentView = 'courses';
     }
