@@ -1,22 +1,14 @@
-app.submitOrder = function () {
-  const nameValid = /^[A-Za-z\s]+$/.test(this.customerName);
-  const phoneValid = /^[0-9]+$/.test(this.customerPhone);
+app.submitOrder = () => {
+  const nameValid = /^[A-Za-z\s]+$/.test(app.customerName);
+  const phoneValid = /^[0-9]+$/.test(app.customerPhone);
 
-  if (!nameValid) {
-    alert('Name must contain only letters.');
-    return;
-  }
-  if (!phoneValid) {
-    alert('Phone number must contain only numbers.');
-    return;
-  }
+  if (!nameValid) return alert('Name must contain only letters.');
+  if (!phoneValid) return alert('Phone number must contain only numbers.');
 
-  alert(
-    `Order placed successfully!\nName: ${this.customerName}\nPhone: ${this.customerPhone}\nTotal: $${this.basketTotal}`
-  );
+  alert(`Order placed successfully!\nName: ${app.customerName}\nPhone: ${app.customerPhone}\nTotal: $${app.basketTotal}`);
 
-  this.customerName = '';
-  this.customerPhone = '';
-  this.basket = [];
-  this.currentView = 'courses';
+  app.customerName = '';
+  app.customerPhone = '';
+  app.basket = [];
+  app.currentView = 'courses';
 };
