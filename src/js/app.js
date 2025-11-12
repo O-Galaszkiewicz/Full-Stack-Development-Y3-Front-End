@@ -175,7 +175,7 @@ const app = new Vue({
       this.currentView = 'courses';
     },
 
-    toggleBasket () {
+    toggleBasket() {
       this.showBasket = !this.showBasket;
     },
 

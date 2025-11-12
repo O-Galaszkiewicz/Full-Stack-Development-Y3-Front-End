@@ -44,7 +44,7 @@
             <!-- Course List -->
             <div class="course" v-for="(course, index) in filteredCourses" :key="index">
                 <i :class="course.icon"></i>
-                <strong>{{ course.subject }}</strong><br>
+                <strong>{{ course.subject }}</strong><br><br>
                 Location: {{ course.location }}<br>
                 Price: ${{ course.price }}<br>
                 Spaces left: {{ course.spaces }}<br>
