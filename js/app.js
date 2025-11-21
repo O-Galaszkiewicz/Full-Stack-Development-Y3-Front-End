@@ -12,10 +12,22 @@ const app = new Vue({
 
     // Search and sorting options
     searchQuery: '',   // User-entered search text
-    sortOption: ''     // Selected sorting option (price, subject, spaces, etc.)
+    sortOption: '',    // Selected sorting option (price, subject, spaces, etc.)
+
+    courses: []
   },
 
   methods: {
+    // Fetch course data from backend
+    fetchCourses() {
+      fetch("https://full-stack-development-y3-back-end.onrender.com/courses")
+        .then(res => res.json())
+        .then(data => {
+          this.courses = data;
+        })
+        .catch(err => console.error("Failed to load courses:", err));
+    },
+
     // Switch to checkout
     checkout() {
       this.showBasket = false;
@@ -79,5 +91,9 @@ const app = new Vue({
 
       return result;
     }
+  },
+
+  created() {
+    this.fetchCourses();   // Load backend courses on startup
   }
 });
