@@ -6,7 +6,6 @@ const app = new Vue({
     basket: [],         // Holds the list of courses the user has added to their shopping basket in an array. Each item: { course, quantity }
     showBasket: false,  // Controls whether the basket modal is visible
 
-    // Temporary customer/order data used during checkout
     customerName: '',
     customerPhone: '',
 
@@ -28,13 +27,46 @@ const app = new Vue({
         .catch(err => console.error("Failed to load courses:", err));
     },
 
+    // PATCH request to update spaces in DB
+    async updateCourseSpaces(courseId, newSpaces) {
+      try {
+        await fetch(
+          `https://full-stack-development-y3-back-end.onrender.com/courses/${courseId}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ spaces: newSpaces })
+          }
+        );
+      } catch (err) {
+        console.error("Error updating spaces:", err);
+      }
+    },
+
+    // POST order to backend
+    async sendOrder(orderData) {
+      try {
+        const response = await fetch(
+          "https://full-stack-development-y3-back-end.onrender.com/order",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData)
+          }
+        );
+
+        return await response.json();
+      } catch (err) {
+        console.error("Error sending order:", err);
+      }
+    },
+
     // Switch to checkout
     checkout() {
       this.showBasket = false;
       this.currentView = 'checkout';
     },
 
-    // Cancel checkout and go back
     cancelCheckout() {
       this.currentView = 'courses';
     },
@@ -43,7 +75,7 @@ const app = new Vue({
       this.showBasket = !this.showBasket;
     },
 
-    // Placeholder basket methods (defined in basket.js)
+    // Placeholder - real implementations are in basket.js
     addToBasket() { },
     removeFromBasket() { },
     increaseQuantity() { },

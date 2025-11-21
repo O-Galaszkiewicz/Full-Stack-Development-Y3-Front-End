@@ -1,4 +1,4 @@
-app.submitOrder = () => {
+app.submitOrder = async () => {
   const nameValid = /^[A-Za-z\s]{3,30}$/.test(app.customerName);
   const phoneValid = /^[0-9]{12,15}$/.test(app.customerPhone);
 
@@ -11,9 +11,26 @@ app.submitOrder = () => {
     return;
   }
 
-  alert(
-    `Order placed successfully!\nName: ${app.customerName}\nPhone: ${app.customerPhone}\nTotal: $${app.basketTotal}`
-  );
+  // Build proper order object for backend
+  const orderData = {
+    name: app.customerName,
+    phone: app.customerPhone,
+    basket: app.basket.map(item => ({
+      courseId: item.course._id,
+      quantity: item.quantity
+    })),
+    total: app.basketTotal
+  };
+
+  // Send order to backend
+  const result = await app.sendOrder(orderData);
+
+  if (result?.error) {
+    alert("Failed to place order.");
+    return;
+  }
+
+  alert("Order placed successfully!");
 
   app.customerName = '';
   app.customerPhone = '';
