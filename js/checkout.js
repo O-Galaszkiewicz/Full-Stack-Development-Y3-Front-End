@@ -16,7 +16,7 @@ app.submitOrder = async () => {
     name: app.customerName,
     phone: app.customerPhone,
     basket: app.basket.map(item => ({
-      courseId: item._id,
+      courseId: item.course._id,
       quantity: item.quantity
     })),
     total: app.basketTotal
