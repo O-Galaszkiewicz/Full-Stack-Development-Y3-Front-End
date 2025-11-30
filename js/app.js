@@ -47,7 +47,7 @@ const app = new Vue({
     async sendOrder(orderData) {
       try {
         const response = await fetch(
-          "https://full-stack-development-y3-back-end.onrender.com/order",
+          "https://full-stack-development-y3-back-end.onrender.com/orders",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
