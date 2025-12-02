@@ -36,6 +36,8 @@
                     <option value="price-desc">Price (Highest → Lowest)</option>
                     <option value="subject-asc">Subject (A → Z)</option>
                     <option value="subject-desc">Subject (Z → A)</option>
+                    <option value="location-asc">Location (A → Z)</option>
+                    <option value="location-desc">Location (Z → A)</option>
                     <option value="spaces-asc">Spaces (Lowest → Highest)</option>
                     <option value="spaces-desc">Spaces (Highest → Lowest)</option>
                 </select>
@@ -48,8 +50,8 @@
                 Location: {{ course.location }}<br>
                 Price: ${{ course.price }}<br>
                 Spaces left: {{ course.spaces }}<br>
-                <button @click="addToBasket(course)">
-                    {{ isInBasket(course) ? 'In Basket' : 'Add to Basket' }}
+                <button @click="addToBasket(course)" :disabled="course.spaces === 0">
+                    {{ course.spaces === 0 ? "Sold Out" : (isInBasket(course) ? "In Basket" : "Add to Basket") }}
                 </button>
             </div>
 

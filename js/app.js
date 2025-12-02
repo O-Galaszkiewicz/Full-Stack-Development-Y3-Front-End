@@ -113,6 +113,12 @@ const app = new Vue({
         case 'subject-desc':
           result = result.slice().sort((a, b) => b.subject.localeCompare(a.subject));
           break;
+        case 'location-asc':
+          result = result.slice().sort((a, b) => a.location.localeCompare(b.location));
+          break;
+        case 'location-desc':
+          result = result.slice().sort((a, b) => b.location.localeCompare(a.location));
+          break;
         case 'spaces-asc':
           result = result.slice().sort((a, b) => a.spaces - b.spaces);
           break;
