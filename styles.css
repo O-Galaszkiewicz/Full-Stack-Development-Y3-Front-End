@@ -79,6 +79,10 @@ select:focus {
     min-width: 200px;
 }
 
+option {
+    background-color: #202020;
+}
+
 /* Course List (Cards) */
 .course {
     border: 1px solid #ccc;
