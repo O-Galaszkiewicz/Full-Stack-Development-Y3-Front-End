@@ -27,6 +27,41 @@ const app = new Vue({
         .catch(err => console.error("Failed to load courses:", err));
     },
 
+    async syncCourses() {
+      try {
+        const response = await fetch("https://full-stack-development-y3-back-end.onrender.com/courses");
+        const latestCourses = await response.json();
+
+        latestCourses.forEach(latest => {
+          // Update course list
+          const course = this.courses.find(c => c._id === latest._id);
+          if (course) {
+            course.spaces = latest.spaces;
+          }
+
+          // Update basket item availability
+          const basketItem = this.basket.find(item => item.course._id === latest._id);
+          if (basketItem) {
+            basketItem.course.spaces = latest.spaces - basketItem.quantity;
+
+            // If the basket quantity is now too high, reduce it
+            if (basketItem.quantity > latest.spaces) {
+              basketItem.quantity = latest.spaces;
+              alert(`Notice: "${basketItem.course.subject}" now has fewer spaces. Basket updated.`);
+            }
+
+            // If no spaces at all, remove
+            if (latest.spaces === 0) {
+              alert(`"${basketItem.course.subject}" is now full and has been removed from your basket.`);
+              this.basket = this.basket.filter(i => i.course._id !== latest._id);
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Error syncing courses:", err);
+      }
+    },
+
     // PATCH request to update spaces in DB
     async updateCourseSpaces(courseId, newSpaces) {
       try {
@@ -133,5 +168,11 @@ const app = new Vue({
 
   created() {
     this.fetchCourses();   // Load backend courses on startup
-  }
+
+    // Auto-refresh every 10 seconds
+    setInterval(() => {
+      this.syncCourses();
+    }, 10000);
+  },
+
 });

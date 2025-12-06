@@ -11,7 +11,7 @@ app.submitOrder = async () => {
     return;
   }
 
-  // Build proper order object for backend
+  // Build order
   const orderData = {
     name: app.customerName,
     phone: app.customerPhone,
@@ -30,10 +30,20 @@ app.submitOrder = async () => {
     return;
   }
 
+  // Apply database stock updates (PATCH per course)
+  for (const item of app.basket) {
+    const newSpaces = item.course.spaces;
+    await app.updateCourseSpaces(item.course._id, newSpaces);
+  }
+
   alert("Order placed successfully!");
 
+  // Reset UI
   app.customerName = '';
   app.customerPhone = '';
   app.basket = [];
   app.currentView = 'courses';
+
+  // Reload real database values
+  app.fetchCourses();
 };
